@@ -1,0 +1,30 @@
+apiVersion: policy.kubevault.com/v1alpha1
+kind: VaultPolicy
+metadata:
+  name: kv-se-policy
+  namespace: demo
+spec:
+  # specifies the appbinding crd name which holds the connection info for vault
+  vaultRef:
+    name: vault
+  policyDocument: |
+    path "kv/*" {
+      capabilities = ["create", "read"]
+    }
+---
+apiVersion: policy.kubevault.com/v1alpha1
+kind: VaultPolicyBinding
+metadata:
+  name: kv-se-role
+  namespace: demo
+spec:
+  vaultRef:
+    name: vault
+  policies:
+    - ref: kv-se-policy
+  subjectRef:
+    kubernetes:
+      serviceAccountNames:
+        - "pod-sa"
+      serviceAccountNamespaces:
+        - "trial"
