@@ -1,0 +1,17 @@
+apiVersion: catalog.kubevault.com/v1alpha1
+kind: VaultServerVersion
+metadata:
+  annotations:
+    meta.helm.sh/release-name: kubevault-catalog
+    meta.helm.sh/release-namespace: kubevault
+  name: 1.7.3
+spec:
+  version: 1.7.3
+  vault:
+    image: vault:1.7.3
+  unsealer:
+    image: kubevault/vault-unsealer:v0.4.0
+    imagePullPolicy: Always
+  exporter:
+    image: sakibalamin/vault-exporter:v0.1.0
+    imagePullPolicy: Always
