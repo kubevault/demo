@@ -1,4 +1,8 @@
 ## AppsCode Webinar 10-13-21
+<p class="has-text-centered">
+  <img src="./static/webinar-poster-10-13-21.jpeg" alt="Poster" style="border: none">
+</p>
+
 ### [KubeDB](https://kubedb.com/) Database User Management using [KubeVault](https://kubevault.com/)
 
 ---
@@ -69,11 +73,17 @@ $ kubectl apply -f reader-writer-role.yaml
 ```
 
 ### create secretaccessrequest (Persona - DB User)
+<p class="has-text-centered">
+  <img src="./static/secret-access-request.svg" alt="SecretAccessRequest Flowchart" style="border: none">
+</p>
+
 ```bash
 # create the readWrite access request
 $ kubectl apply -f read-write-access-req.yaml
+```
 
 # create the read access request
+```bash
 $ kubectl apply -f read-access-request.yaml
 ```
 
@@ -104,6 +114,10 @@ $ kubectl apply -f serviceaccount.yaml
 ```
 
 ### create secretrolebinding to bind a set of roles to a set of users (Persona - DB Admin)
+<p class="has-text-centered">
+  <img src="./static/secret-role-binding.svg" alt="SecretRoleBinding Flowchart" style="border: none">
+</p>
+
 ```bash
 # upon successful secretrolebinding kubevault operator will create vaultpolicy & vaultpolicybinding
 $ kubectl apply -f secretrolebinding.yaml
