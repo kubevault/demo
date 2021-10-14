@@ -1,4 +1,7 @@
 ## AppsCode Webinar 08-12-21
+<p class="has-text-centered">
+  <img src="./static/webinar-poster-8-12-21.jpeg" alt="SecretRoleBinding Flowchart" style="border: none">
+</p>
 ### Manage HashiCorp Vault in Kubernetes native way using [KubeVault](https://kubevault.com/)
 
 ---
