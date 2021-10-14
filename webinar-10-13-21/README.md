@@ -1,6 +1,6 @@
 ## AppsCode Webinar 10-13-21
 <p class="has-text-centered">
-  <img src="./static/webinar-poster-10-13-21.jpeg" alt="SecretRoleBinding Flowchart" style="border: none">
+  <img src="./static/webinar-poster-10-13-21.jpeg" alt="Poster" style="border: none">
 </p>
 
 ### [KubeDB](https://kubedb.com/) Database User Management using [KubeVault](https://kubevault.com/)
@@ -74,7 +74,7 @@ $ kubectl apply -f reader-writer-role.yaml
 
 ### create secretaccessrequest (Persona - DB User)
 <p class="has-text-centered">
-  <img src="./static/secret-access-request.svg" alt="SecretRoleBinding Flowchart" style="border: none">
+  <img src="./static/secret-access-request.svg" alt="SecretAccessRequest Flowchart" style="border: none">
 </p>
 ```bash
 # create the readWrite access request
