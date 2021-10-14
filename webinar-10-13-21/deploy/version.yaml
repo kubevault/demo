@@ -1,0 +1,14 @@
+apiVersion: catalog.kubevault.com/v1alpha1
+kind: VaultServerVersion
+metadata:
+  name: 1.8.2
+spec:
+  version: 1.8.2
+  vault:
+    image: vault:1.8.2
+  unsealer:
+    image: kubevault/vault-unsealer:v0.5.1
+    imagePullPolicy: Always
+  exporter:
+    image: kubevault/vault-exporter:v0.1.1
+    imagePullPolicy: Always

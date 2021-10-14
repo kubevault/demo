@@ -1,0 +1,10 @@
+apiVersion: engine.kubevault.com/v1alpha1
+kind: MongoDBRole
+metadata:
+  name: reader-writer-role
+  namespace: dev
+spec:
+  secretEngineRef:
+    name: mongo-secret-engine
+  creationStatements:
+    - '{ "db": "mydb", "roles": [{ "role": "readWrite" }] }'
