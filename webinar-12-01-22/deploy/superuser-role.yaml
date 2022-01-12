@@ -1,0 +1,16 @@
+apiVersion: engine.kubevault.com/v1alpha1
+kind: MySQLRole
+metadata:
+  name: superuser-role
+  namespace: dev
+spec:
+  secretEngineRef:
+    name: mysql-secret-engine
+  creationStatements:
+    - "CREATE USER '{{name}}'@'%' IDENTIFIED BY '{{password}}';"
+    - "GRANT ALL ON *.* TO '{{name}}'@'%';"
+  revocationStatements:
+    - "REVOKE ALL ON *.* FROM '{{name}}'@'%';"
+    - "DROP USER '{{name}}'@'%';"
+  defaultTTL: 1h
+  maxTTL: 24h
