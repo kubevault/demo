@@ -1,0 +1,43 @@
+apiVersion: kubevault.com/v1alpha1
+kind: VaultServer
+metadata:
+  name: vault
+  namespace: demo
+spec:
+  tls:
+    issuerRef:
+      apiGroup: "cert-manager.io"
+      kind: Issuer
+      name: vault-issuer
+  allowedSecretEngines:
+    namespaces:
+      from: All
+    secretEngines:
+      - mysql
+  version: 1.9.2
+  replicas: 3
+  backend:
+    raft:
+      path: "/vault/data"
+      storage:
+        storageClassName: "standard"
+        resources:
+          requests:
+            storage: 1Gi
+  unsealer:
+    secretShares: 5
+    secretThreshold: 3
+    mode:
+      googleKmsGcs:
+        kmsCryptoKey: vault-testing-key
+        kmsKeyRing: vault-testing
+        kmsLocation: global
+        kmsProject: appscode-testing
+        bucket: vault-testing-keys
+        credentialSecret: gcp-cred
+  monitor:
+    agent: prometheus.io
+    prometheus:
+      exporter:
+        resources: {}
+  terminationPolicy: DoNotTerminate
