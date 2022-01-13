@@ -5,6 +5,7 @@
 </p>
 
 # Secure Secrets: A Cloud-Native Approach Made Simple With KubeVault
+
 ---
 
 ## Install KubeDB Enterprise operator chart
