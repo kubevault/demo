@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: oidc-cred
+  namespace: demo
+stringData:
+  oidc_client_secret: <client-secret-value>
