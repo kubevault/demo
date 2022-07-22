@@ -1,0 +1,41 @@
+apiVersion: kubevault.com/v1alpha2
+kind: VaultServer
+metadata:
+  name: vault
+  namespace: demo
+spec:
+  version: 1.10.3
+  replicas: 3
+  allowedSecretEngines:
+    namespaces:
+      from: All
+    secretEngines:
+    - mongodb
+  authMethods:
+  - type: oidc
+    path: oidc
+    jwtConfig:
+      defaultLeaseTTL: 1h
+      oidcClientID: aFSrk3w06WsQqyjA30HvhbbJIR1VBidU
+      oidcDiscoveryURL: https://dev-tob49v6v.us.auth0.com/
+      credentialSecretRef: 
+        name: oidc-cred
+  backend:
+    raft:
+      storage:
+        storageClassName: "standard"
+        resources:
+          requests:
+            storage: 1Gi
+  unsealer:
+    secretShares: 3
+    secretThreshold: 2
+    mode:
+      kubernetesSecret:
+        secretName: vault-keys
+  monitor:
+    agent: prometheus.io
+    prometheus:
+      exporter:
+        resources: {}
+  terminationPolicy: WipeOut
