@@ -1,0 +1,17 @@
+apiVersion: ops.kubevault.com/v1alpha1
+kind: VaultOpsRequest
+metadata:
+  name: reconfigure-tls
+  namespace: demo
+spec:
+  type: ReconfigureTLS
+  vaultRef:
+    name: vault
+  tls:
+    certificates:
+      - alias: server
+        subject:
+          organizations:
+            - appscode:kubevault
+        emailAddresses:
+          - "sakibalamin@appscode.com"
