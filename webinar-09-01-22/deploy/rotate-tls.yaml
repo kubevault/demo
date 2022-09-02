@@ -1,0 +1,11 @@
+apiVersion: ops.kubevault.com/v1alpha1
+kind: VaultOpsRequest
+metadata:
+  name: rotate-tls
+  namespace: demo
+spec:
+  type: ReconfigureTLS
+  vaultRef:
+    name: vault
+  tls:
+    rotateCertificates: true
