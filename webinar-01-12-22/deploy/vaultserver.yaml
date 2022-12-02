@@ -1,11 +1,9 @@
-apiVersion: kubevault.com/v1alpha2
+apiVersion: kubevault.com/v1alpha1
 kind: VaultServer
 metadata:
   name: vault
   namespace: demo
 spec:
-  version: 1.12.1
-  replicas: 3
   tls:
     issuerRef:
       apiGroup: "cert-manager.io"
@@ -15,9 +13,12 @@ spec:
     namespaces:
       from: All
     secretEngines:
-      - gcp
+      - mysql
+  version: 1.9.2
+  replicas: 3
   backend:
     raft:
+      path: "/vault/data"
       storage:
         storageClassName: "standard"
         resources:
@@ -33,11 +34,10 @@ spec:
         kmsLocation: global
         kmsProject: appscode-testing
         bucket: vault-testing-keys
-        credentialSecretRef:
-          name: gcp-cred
+        credentialSecret: gcp-cred
   monitor:
     agent: prometheus.io
     prometheus:
       exporter:
         resources: {}
-  terminationPolicy: WipeOut
+  terminationPolicy: DoNotTerminate
