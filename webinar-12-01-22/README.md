@@ -1,50 +1,31 @@
 # AppsCode Webinar 12-01-22
 
 <p class="has-text-centered">
-  <img src="./static/webinar-12-01-22-poster.png" alt="Poster" style="border: none">
+  <img src="./static/hero.jpg" alt="Poster" style="border: none">
 </p>
 
-# Secure Secrets: A Cloud-Native Approach Made Simple With KubeVault
+# Backup & Restore Vault cluster with Stash
 
 ---
 
-## Install KubeDB Enterprise operator chart
+## Install Stash Enterprise operator chart
 
 ```bash
-$ helm install kubedb appscode/kubedb \
-    --version v2021.12.21 \
-    --namespace kubedb --create-namespace \
-    --set kubedb-enterprise.enabled=true \
-    --set kubedb-autoscaler.enabled=true \
-    --set-file global.license=/path/to/the/license.txt
+$ helm install stash appscode/stash \
+  --version v2022.09.29 \
+  --namespace stash --create-namespace \
+  --set features.enterprise=true \
+  --set-file global.license=/path/to/the/license.txt
+  
 ```
 
 ## Install KubeVault Enterprise operator chart
 
 ```bash
 $ helm install kubevault appscode/kubevault \
-    --version v2022.01.11 \
+    --version v2022.11.30 \
     --namespace kubevault --create-namespace \
     --set-file global.license=/path/to/the/license.txt
-```
-
-## Install Secret-store CSI Driver
-
-```bash
-$ helm install csi-secrets-store secrets-store-csi-driver/secrets-store-csi-driver --namespace kube-system
-```
-
-## Install Vault specific CSI Provider
-
-```bash
-# using helm
-$ helm install vault hashicorp/vault \
-    --set "server.enabled=false" \
-    --set "injector.enabled=false" \
-    --set "csi.enabled=true"
-     
-# or using provider yaml
-$ kubectl apply -f provider.yaml
 ```
 
 ## Deploy TLS Secured VaultServer
@@ -67,119 +48,62 @@ $ export VAULT_SKIP_VERIFY=true
 $ export VAULT_TOKEN=(kubectl vault get-root-token vaultserver vault -n demo --value-only) 
 ```
 
-## Get decrypted Vault Root Token
+## Enable KV SecretEngine & Write some data
 
 ```bash
-# get the decrypted root token with name
-$ kubectl vault get-root-token vaultserver vault -n demo
+# enable kv secret engine
+$ vault secrets enable kv
 
-# get only the value of decrypted root token
-$ kubectl vault get-root-token vaultserver vault -n demo --value-only
+# write data
+$ vault kv put kv/name name=appscode
 ```
 
-## Enable MySQL SecretEngine
+## Create Backup & Restore Repository
 
 ```bash
-# create mysql DB 
-$ kubectl apply -f mysql.yaml
-
-# enable secret engine
-$ kubectl apply -f secretengine.yaml
+$ kubectl apply -f repository.yaml
 ```
 
-## Create Database Roles
+## Create BackupConfiguration
 
 ```bash
-# create the superuser role
-$ kubectl apply -f superusr-role.yaml
-
-# create the readonly role
-$ kubectl apply -f readonly-role.yaml
+# this will create a backup session at time interval set in the spec
+$ kubectl apply -f backup-configuration.yaml
 ```
 
-## Create SecretAccessRequest
+## Trigger a backup session using Stash CLI
 
 ```bash
-$ kubectl apply -f secretaccessrequest.yaml
+# optionally a backup session can be triggered using stash cli
+# successful backup session will save the snapshot in the repository
+$ kubectl stash trigger demo-backup -n demo
 ```
 
-## Approve/Deny SecretAccessRequest
+## Delete KV Secret Engine
 
 ```bash
-# upon approval of secret access request, secrets with username/password will be created
-$ kubectl vault approve secretaccessrequest mysql-cred-req -n dev
-
-# deny secret access request
-$ kubectl vault deny secretaccessrequest mysql-cred-req -n dev
-```
-## Secure Microservice using Dynamic Secrets
-This microservice will use the dynamically generated credentials (username, password) which will be mounted on the provided directory & these credentials bound the users to the specific roles in the database.
-
-## Create ServiceAccount & SecretRoleBinding
-
-```bash
-# create the service account
-$ kubectl apply -f serviceaccount.yaml
-
-# create the secret role binding
-$ kubectl apply -f secretrolebinding.yaml
+$ vault secrets disable kv
 ```
 
-## Create SecretProviderClass using KubeVault CLI
+## Restore snapshot into Vault
 
 ```bash
-# Generate secretproviderclass for the MySQL username and password
-$ kubectl vault generate secretproviderclass vault-db-provider -n test      \
-    --secretrolebinding=dev/secret-r-binding \
-    --vaultrole=MySQLRole/readonly-role \
-    --keys username=sql-user --keys password=sql-pass -o yaml 
+# successful restore session will restore the vault data
+$  kubectl apply -f restore-session.yaml
 ```
 
-## Deploy the Microservice 
+## Delete & Deploy a new VaultServer 
 
 ```bash
-# create a microservice deployment
-$ kubectl apply -f microservice.yaml
-```
-
-## Revoke the SecretAccessRequest
-
-```bash
-$ kubectl vault revoke secretaccessrequest mysql-cred-req -n dev
-```
-
-## Delete the VaultServer
-
-```bash
-# TerminationPolicy WipeOut will clean-up the unseal keys & root token 
 $ kubectl delete -f vaultserver.yaml
+$ kubectl apply -f vaultserver.yaml
 ```
 
-## MySQL Queries
+## Run another Restore Session 
 
 ```bash
-# login as the root user
-$ mysql -uroot -p$MYSQL_ROOT_PASSWORD
-
-# login using the username, password
-$ mysql -u <username> -p
-
-# show the databases
-$ show databases;
-
-# use the <db-name>
-$ use <db-name>;
-
-# show tables
-$ show tables;
-
-# create a table with name product with column <id, name, price>
-$ create table product(id int, name varchar(100), price float);
-
-# insert values into product table
-$ insert into product(id, name, price) values(1, "pen", 3.5);
-$ insert into product(id, name, price) values(2, "book", 7.5);
-
-# select everything from the product table
-$ select * from product;
+# edit the restore session to make the -force=true to forcefully restore the snapshot
+$ kubectl apply -f restore-session.yaml
 ```
+
+
