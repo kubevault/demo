@@ -1,0 +1,17 @@
+apiVersion: kubedb.com/v1alpha2
+kind: Redis
+metadata:
+  name: rd-standalone
+  namespace: db
+spec:
+  version: 6.2.5
+  storageType: Durable
+  storage:
+    storageClassName: "standard"
+    accessModes:
+      - ReadWriteOnce
+    resources:
+      requests:
+        storage: 1Gi
+  terminationPolicy: WipeOut
+
