@@ -1,0 +1,12 @@
+apiVersion: engine.kubevault.com/v1alpha1
+kind: RedisRole
+metadata:
+  name: read-role
+  namespace: dev
+spec:
+  secretEngineRef:
+    name: redis-secret-engine
+  creationStatements:
+    - '["~*", "+@read"]'
+  defaultTTL: 1h
+  maxTTL: 24h
